@@ -1,6 +1,7 @@
 import argformat
 import argparse
 import importlib
+import os
 
 if __name__ == "__main__":
     ########################################################################
@@ -15,9 +16,10 @@ if __name__ == "__main__":
 
     # Optional arguments
     parser.add_argument(
-        "days",
-        nargs = '+',
-        help  = "AoC day(s) for which to run exercise",
+        "--days",
+        nargs   = '+',
+        default = ['all'],
+        help    = "run exercise for given days. can be 'all', <int> [<int> ...], <start>-<stop>",
     )
 
     parser.add_argument(
@@ -42,6 +44,30 @@ if __name__ == "__main__":
     # Parse arguments
     args = parser.parse_args()
 
+    # Parse days
+    if len(args.days) == 1 and args.days[0] == 'all':
+        # Initialise days
+        args.days = list()
+
+        # Loop over all implemented solutions
+        for solution in os.listdir("code"):
+            # Get potential solution
+            solution = os.path.splitext(solution)[0]
+            # Check if solution is number
+            if solution.isdigit():
+                # Add solution
+                args.days.append(int(solution))
+
+        # Sort by day
+        args.days = sorted(args.days)
+
+    elif len(args.days) == 1 and '-' in args.days[0]:
+        # Get range
+        start, end = args.days[0].split('-', 1)
+        start = int(start) if start else 1
+        end   = int(end)+1 if end   else 26
+        args.days = range(start, end)
+
     ########################################################################
     #                            Run challenge                             #
     ########################################################################
@@ -55,7 +81,7 @@ if __name__ == "__main__":
         print()
 
         # Load challenge object
-        challenge = getattr(importlib.import_module(f"{day}"), f"Day{day}")()
+        challenge = getattr(importlib.import_module(f"{day}"), "ChallengeSolution")()
 
         # Get path for specific day
         if args.test:

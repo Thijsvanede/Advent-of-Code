@@ -1,7 +1,7 @@
 import numpy as np
-from day import Day
+from challenge import Challenge
 
-class Day10(Day):
+class ChallengeSolution(Challenge):
     ########################################################################
     #                                Setup                                 #
     ########################################################################

@@ -1,6 +1,6 @@
 import timeit
 
-class Day(object):
+class Challenge(object):
 
     ########################################################################
     #                            Run challenge                             #

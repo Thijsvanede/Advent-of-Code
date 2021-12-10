@@ -1,8 +1,8 @@
 import copy
 import numpy as np
-from day import Day
+from challenge import Challenge
 
-class Day3(Day):
+class ChallengeSolution(Challenge):
 
     ########################################################################
     #                              Load data                               #

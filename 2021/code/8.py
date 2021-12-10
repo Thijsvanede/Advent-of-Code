@@ -1,8 +1,8 @@
 import itertools
 import numpy as np
-from day import Day
+from challenge import Challenge
 
-class Day8(Day):
+class ChallengeSolution(Challenge):
 
     def __init__(self):
         # Initialise super
@@ -39,8 +39,8 @@ class Day8(Day):
         for i, item in enumerate(data):
             crossed, target = item.split(' | ')
             data[i] = (
-                [list(x) for x in crossed.split()],
-                [list(x) for x in target .split()],
+                [set(x) for x in crossed.split()],
+                [set(x) for x in target .split()],
             )
 
         # Return data
@@ -62,6 +62,37 @@ class Day8(Day):
         return result
 
     def part_2(self, data):
+        # Initialise result
+        result = 0
+
+        # Loop over all data
+        for crossed, target in data:
+            # Sort crossed by length
+            crossed = list(sorted(crossed, key=lambda x: len(x)))
+
+            # Define each number in crossed
+            one   = crossed[0]
+            four  = crossed[2]
+            seven = crossed[1]
+            eight = crossed[9]
+            three = [x for x in crossed[3:6] if len(x & one  ) == 2][0]
+            six   = [x for x in crossed[6:9] if len(x & one  ) == 1][0]
+            zero  = [x for x in crossed[6:9] if len(x | three) == 7 and x != six  ][0]
+            nine  = [x for x in crossed[6:9] if len(x | three) != 7][0]
+            two   = [x for x in crossed[3:6] if len(x | nine ) == 7 and x != three][0]
+            five  = [x for x in crossed[3:6] if len(x | nine ) == 6 and x != three][0]
+
+            # Define numbers
+            crossed = [zero,one,two,three,four,five,six,seven,eight,nine]
+
+            # Check where target equals crossed
+            for i, x in enumerate(reversed(target)):
+                result += pow(10, i) * crossed.index(x)
+
+        # Return result
+        return result
+
+    def part_2_naive(self, data):
         return 0
         # Get all possible permutations
         permutations = np.asarray([
