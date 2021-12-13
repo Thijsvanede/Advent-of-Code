@@ -35,7 +35,7 @@ class ChallengeSolution(Challenge):
 
     def part_2(self, graph):
         # Perform a depth first search which can be visited twice
-        return len(self.dfs2(graph, 'start', 'end'))
+        return self.dfs2(graph, 'start', 'end')
 
     ########################################################################
     #           Minor rewrite of networkx all_simple_paths graph           #
@@ -65,7 +65,7 @@ class ChallengeSolution(Challenge):
     def dfs2(self, graph, source, target, trace=None, small=None):
         """Perform depth first search over graph."""
         # Initialise result
-        result = set()
+        result = 0
 
         # Initialise trace if None
         if trace is None:
@@ -73,15 +73,15 @@ class ChallengeSolution(Challenge):
 
         # If source == target, we are there!
         if source == target:
-            return set([tuple(trace + [target])])
+            return 1
 
         # Loop over all children of source
         for child in graph[source]:
             # Check if we can still visit child
             if child.isupper() or child not in trace:
-                result |= self.dfs2(graph, child, target, trace + [source], small=small)
+                result += self.dfs2(graph, child, target, trace + [source], small=small)
             elif child in trace and small is None and child != 'start' and child != 'end':
-                result |= self.dfs2(graph, child, target, trace + [source], small=child)
+                result += self.dfs2(graph, child, target, trace + [source], small=child)
 
         # Return result
         return result
