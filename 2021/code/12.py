@@ -41,47 +41,54 @@ class ChallengeSolution(Challenge):
     #           Minor rewrite of networkx all_simple_paths graph           #
     ########################################################################
 
-    def dfs(self, graph, source, target, trace=None):
+    def dfs(self, graph, source, target, trace=tuple()):
         """Perform depth first search over graph."""
         # Initialise result
         result = 0
 
-        # Initialise trace if None
-        if trace is None:
-            trace = list()
-
-        # If source == target, we are there!
-        if source == target:
-            return 1
-
         # Loop over all children of source
         for child in graph[source]:
-            if child.isupper() or child not in trace:
-                result += self.dfs(graph, child, target, trace + [source])
+            # Add 1 to result if target is found
+            if child == target:
+                result += 1
+
+            # Check if we can still visit child
+            elif child.isupper() or child not in trace:
+                result += self.dfs(graph, child, target, trace + (source,))
 
         # Return result
         return result
 
-    def dfs2(self, graph, source, target, trace=None, small=None):
+    def dfs2(self, graph, source, target, trace=tuple(), small=None):
         """Perform depth first search over graph."""
         # Initialise result
         result = 0
 
-        # Initialise trace if None
-        if trace is None:
-            trace = list()
-
-        # If source == target, we are there!
-        if source == target:
-            return 1
-
         # Loop over all children of source
         for child in graph[source]:
+            # Add 1 to result if target is found
+            if child == target:
+                result += 1
+
             # Check if we can still visit child
-            if child.isupper() or child not in trace:
-                result += self.dfs2(graph, child, target, trace + [source], small=small)
-            elif child in trace and small is None and child != 'start' and child != 'end':
-                result += self.dfs2(graph, child, target, trace + [source], small=child)
+            elif child.isupper() or child not in trace:
+                result += self.dfs2(
+                    graph  = graph,
+                    source = child,
+                    target = target,
+                    trace  = trace + (source,),
+                    small  = small,
+                )
+
+            # Check if we can use the small cave twice
+            elif not child.isupper() and small is None and child != 'start':
+                result += self.dfs2(
+                    graph  = graph,
+                    source = child,
+                    target = target,
+                    trace  = trace + (source,),
+                    small  = child,
+                )
 
         # Return result
         return result
