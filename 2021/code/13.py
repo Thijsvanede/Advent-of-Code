@@ -102,9 +102,11 @@ class ChallengeSolution(Challenge):
                 result = np.logical_or(a, b.T[::-1].T)
 
         # Show result
-        self.show(result)
+        return self.show(result)
 
 
     def show(self, result):
+        string = ''
         for row in result:
-            print(''.join(['█' if item else ' ' for item in row]))
+            string += '\n' + ''.join(['█' if item else ' ' for item in row])
+        return string
