@@ -59,6 +59,7 @@ class ChallengeSolution(Challenge):
         # Return result
         return version, type_id, result, data
 
+
     def parse_literal(self, data):
         """Parse a literal"""
         # Initialise result
@@ -79,6 +80,7 @@ class ChallengeSolution(Challenge):
 
         # Add to result and return
         return (result << 4) + (part & 0xF), data
+
 
     def parse_subpacket(self, data):
         # Extract length_type_id
@@ -118,6 +120,7 @@ class ChallengeSolution(Challenge):
         # Return result
         return packets, data
 
+
     def version_sum(self, data):
         # Initialise result
         result = 0
@@ -134,56 +137,46 @@ class ChallengeSolution(Challenge):
         # Return result
         return result
 
+
     def process(self, version, type_id, data):
         # Sum
         if type_id == 0:
-            result = 0
-            for part in data:
-                result += self.process(*part)
+            return sum(self.process(*part) for part in data)
 
         # Product
         elif type_id == 1:
             result = 1
             for part in data:
                 result *= self.process(*part)
+            return result
 
         # Minimum
         elif type_id == 2:
-            result = float('inf')
-            for part in data:
-                part = self.process(*part)
-                if part < result:
-                    result = part
+            return min(self.process(*part) for part in data)
 
         # Maximum
         elif type_id == 3:
-            result = -float('inf')
-            for part in data:
-                part = self.process(*part)
-                if part > result:
-                    result = part
+            return max(self.process(*part) for part in data)
 
         # Literal
         elif type_id == 4:
-            result = data
+            return data
 
         # Greater than
         elif type_id == 5:
             assert len(data) == 2, "> must be computed on 2 numbers"
-            result = int(self.process(*data[0]) > self.process(*data[1]))
+            return int(self.process(*data[0]) > self.process(*data[1]))
 
         # Less than
         elif type_id == 6:
             assert len(data) == 2, "< must be computed on 2 numbers"
-            result = int(self.process(*data[0]) < self.process(*data[1]))
+            return int(self.process(*data[0]) < self.process(*data[1]))
 
         # Equals
         elif type_id == 7:
             assert len(data) == 2, "== must be computed on 2 numbers"
-            result = int(self.process(*data[0]) == self.process(*data[1]))
+            return int(self.process(*data[0]) == self.process(*data[1]))
 
+        # Exception
         else:
             raise NotImplementedError(f"Unknown type_id: {type_id}")
-
-        # Return result
-        return result
