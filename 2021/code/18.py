@@ -100,26 +100,19 @@ class SnailFishNumber(object):
 
     def reduce(self):
         """Reduce a snailfish number represented by graph."""
-        # Copy graph
-        old = copy.deepcopy(self.graph)
         # Explode
-        self.graph = self.explode(self.graph)
+        self.graph, changed = self.explode(self.graph)
 
         # Iterate through graph until nothing explodes
-        while self.graph != old:
-            # Copy graph
-            old = copy.deepcopy(self.graph)
+        while changed:
             # Explode
-            self.graph = self.explode(self.graph)
+            self.graph, changed = self.explode(self.graph)
 
-
-        # Copy graph
-        old = copy.deepcopy(self.graph)
         # Explode
-        self.graph = self.split(self.graph)
+        self.graph, changed = self.split(self.graph)
 
         # Perform reduce again
-        if self.graph != old:
+        if changed:
             return self.reduce()
 
         # Return self
@@ -163,10 +156,10 @@ class SnailFishNumber(object):
                 self.set_nested(graph, path[:-1], 0)
 
                 # Return graph
-                return graph
+                return graph, True
 
         # Return graph
-        return graph
+        return graph, False
 
 
     def split(self, graph, threshold=10):
@@ -182,10 +175,10 @@ class SnailFishNumber(object):
                 })
 
                 # Return graph
-                return graph
+                return graph, True
 
         # Return graph
-        return graph
+        return graph, False
 
     ########################################################################
     #                              Iterators                               #
